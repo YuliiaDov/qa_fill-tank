@@ -3,7 +3,7 @@
 describe('fillTank', () => {
   const { fillTank } = require('./fillTank');
 
-let customer;
+  let customer;
 
   beforeEach(() => {
     customer = {
@@ -15,34 +15,42 @@ let customer;
     };
   });
 
+  it('should return `undefined`', () => {
+    expect(fillTank(customer, 10, 1)).toBeUndefined();
+  });
+
   it('should fill tank fully if no amount provided', () => {
-    fillTank(customer, 50);
+    fillTank(customer, 10);
+
+    expect(customer.money).toBeCloseTo(3000 - (40 - 8) * 10, 2);
     expect(customer.vehicle.fuelRemains).toBe(40);
-    expect(customer.money).toBe(1400);
   });
 
-  it(`should not exceed tank capacity if more fuel requested`, () => {
-    fillTank(customer, 50, 50);
+  it('should not exceed tank capacity if more fuel requested', () => {
+    fillTank(customer, 10, 100);
+
+    expect(customer.money).toBeCloseTo(3000 - (40 - 8) * 10, 2);
     expect(customer.vehicle.fuelRemains).toBe(40);
-    expect(customer.money).toBe(1400);
   });
 
-  it(`should not exceed customer's available money`, () => {
-    customer.money = 500;
-    fillTank(customer, 100, 20);
+  it('should not exceed customer\'s available money', () => {
+    fillTank(customer, 500, 10);
+
+    expect(customer.money).toBeCloseTo(0, 2);
+    expect(customer.vehicle.fuelRemains).toBeCloseTo(8 + Math.floor((3000 / 500) * 10) / 10, 1);
+  });
+
+  it('should round fuel amount and price correctly', () => {
+    fillTank(customer, 100.15, 5);
+
+    expect(customer.money).toBeCloseTo(3000 - 5 * 100.15, 2);
     expect(customer.vehicle.fuelRemains).toBe(13);
-    expect(customer.money).toBe(0);
-  });
-
-  it(`should round fuel amount and price correctly`, () => {
-    fillTank(customer, 47.567, 10);
-    expect(customer.vehicle.fuelRemains).toBe(18);
-    expect(customer.money).toBeCloseTo(2524.33);
   });
 
   it('should not pour fuel if rounded amount is less than 2 liters', () => {
-    fillTank(customer, 1000, 1.5);
-    expect(customer.vehicle.fuelRemains).toBe(8);
+    fillTank(customer, 253, 1.9); // minimum limit is 2
+
     expect(customer.money).toBe(3000);
+    expect(customer.vehicle.fuelRemains).toBe(8);
   });
 });
