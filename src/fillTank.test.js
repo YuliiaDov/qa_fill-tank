@@ -37,7 +37,10 @@ describe('fillTank', () => {
     fillTank(customer, 500, 10);
 
     expect(customer.money).toBeCloseTo(0, 2);
-    expect(customer.vehicle.fuelRemains).toBeCloseTo(8 + Math.floor((3000 / 500) * 10) / 10, 1);
+
+    expect(customer.vehicle.fuelRemains).toBeCloseTo(
+      8 + Math.floor((3000 / 500) * 10) / 10, 1
+    );
   });
 
   it('should round fuel amount and price correctly', () => {
